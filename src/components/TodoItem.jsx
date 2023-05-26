@@ -1,13 +1,33 @@
-import React from 'react'
-import { HiTrash } from 'react-icons/hi'
+import React, { useState } from 'react'
 import Button from './Button'
-function TodoItem({ tarea, onChangeState, onDelete }) {
+import { HiTrash } from 'react-icons/hi'
+import { AiFillEdit } from 'react-icons/ai'
+import FormTask from './FormTask'
+
+function TodoItem({ tarea, onChangeState, onDelete, tareasList, setTareasList }) {
 
   let tareaD = {
     id: tarea.id,
     text: tarea.text,
     state: tarea.state,
     completed: tarea.completed
+  }
+
+  const [showFormEdit, setShowFormEdit] = useState(false)
+  const [textTarea, setTextTarea] = useState(tareaD.text);
+  // funcion de editar tarea 
+  const editTask = (id) => {
+    if (textTarea !== '') {
+      setTareasList(tareasList.map((tarea) => {
+        if (tarea.id === id) {
+          tarea.text = textTarea;
+        }
+        return tarea;
+      }))
+      setShowFormEdit(false);
+    } else {
+      alert('Debe ingresar un texto especial');
+    }
   }
 
   return (
@@ -23,7 +43,7 @@ function TodoItem({ tarea, onChangeState, onDelete }) {
           <p className='text-sm place-self-center'>{tareaD.text}</p>
         </div>
 
-        <div className='flex gap-1 justify-between items-end mt-2'>
+        <div className='flex gap-1 justify-between items-center mt-auto pt-2'>
           <div className='space-x-2'>
             <label
               htmlFor={`completed${tareaD.id}`}
@@ -38,13 +58,32 @@ function TodoItem({ tarea, onChangeState, onDelete }) {
               id={`completed${tareaD.id}`}
             />
           </div>
-          <Button
-            className="bg-red-400 text-white self-end shadow-md"
-            icon={<HiTrash className="text-[18px]" />}
-            onClick={onDelete}
-          />
+          <div className='flex gap-2 '>
+            <Button
+              className="bg-blue-400 text-white shadow-md"
+              icon={<AiFillEdit className="text-[18px]" />}
+              onClick={() => setShowFormEdit(true)}
+            />
+            <Button
+              className="bg-red-400 text-white  shadow-md"
+              icon={<HiTrash className="text-[18px]" />}
+              onClick={onDelete}
+            />
+          </div>
         </div>
       </div>
+      {
+        showFormEdit && (
+          <FormTask
+            type="edit"
+            showForm={setShowFormEdit}
+            setTextTarea={setTextTarea}
+            textTarea={textTarea}
+            handle={() => editTask(tareaD.id)}
+            setTareaTaskEdit={() => setTextTarea(tareaD.text)}
+          />
+        )
+      }
     </>
   )
 }

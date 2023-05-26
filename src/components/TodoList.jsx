@@ -1,20 +1,23 @@
 import React, { useState } from 'react'
+// componentes
 import TodoItem from './TodoItem'
-// Tareas en json 
+import Button from './Button'
+// Data de tareas en json
 import tareas from './../data/Tareas.json'
+// iconos
 import { AiFillCheckCircle, AiOutlineClose } from 'react-icons/ai'
 import { MdOutlineAddCircle } from 'react-icons/md'
-
-import Button from './Button'
+import FormTask from './FormTask'
 
 function TodoList() {
-  const [tareasList, setTareas] = useState(tareas)
-  const [showForm, setShowForm] = useState(false);
+  // Array de las tareas
+  const [tareasList, setTareasList] = useState(tareas)
+
   // funcion para marcar como compleado una  tarea
   const changeStateTarea = (e) => {
     let id = parseInt(e.target.value);
 
-    setTareas(tareasList.map(tarea => {
+    setTareasList(tareasList.map(tarea => {
       if (tarea.id === id) {
         return { ...tarea, completed: !tarea.completed };
       }
@@ -24,7 +27,7 @@ function TodoList() {
 
   // funcion para eliminar una tarea
   const handleDeleteTarea = (id) => {
-    setTareas(tareasList.filter((tarea) => {
+    setTareasList(tareasList.filter((tarea) => {
       return (
         tarea.id !== id
       )
@@ -33,37 +36,38 @@ function TodoList() {
 
   // funcion marcar como completadas todas las tareas
   const changeCompletingTasks = () => {
-    setTareas(tareasList.map(tarea => {
+    setTareasList(tareasList.map(tarea => {
       return { ...tarea, completed: true };
     }))
   }
 
   // funcion marcar como no completadas todas las tareas
   const changeNotCompleted = () => {
-    setTareas(tareasList.map(tarea => {
+    setTareasList(tareasList.map(tarea => {
       return { ...tarea, completed: false };
     }))
   }
 
 
-  // funcion para agregar tarea ( text )
-  const [textTarea, setTextTarea] = useState("");
+  const [showForm, setShowForm] = useState(false); // estado para mostrar u ocultar el formulario
+  const [textTarea, setTextTarea] = useState(""); // estado para controlar el texto del formulario
+
+  // funcion para agregar tarea
   const addNewTask = () => {
     if (textTarea.trim() !== "") {
       const newTask = {
-        id: tareasList.length > 0 ? tareasList[tareasList.length - 1].id + 1 : 1,
+        id: tareasList.length + 1,
         text: textTarea,
         completed: false,
       };
 
-      setTareas([...tareasList, newTask]);
+      setTareasList([...tareasList, newTask]);
       setTextTarea("");
       setShowForm(false);
     } else {
       alert('añade texto mongolito')
     }
   }
-  // funcion para editar tarea ( text , completed )
 
   return (
     <>
@@ -87,7 +91,6 @@ function TodoList() {
           title='No completar todas'
           onClick={changeNotCompleted}
         />
-
       </div>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-5 max-w-[1000px] lg:mx-auto'>
         {tareasList.length === 0 && (
@@ -102,50 +105,23 @@ function TodoList() {
                 tarea={tarea}
                 onChangeState={changeStateTarea}
                 onDelete={() => handleDeleteTarea(tarea.id)}
+
+                tareasList={tareasList}
+                setTareasList={setTareasList}
               />
             )
           })
         }
-        {
-          showForm && (
-            <>
-              <div
-                className='absolute flex flex-col items-center inset-0 h-screen w-screen bg-black bg-opacity-50'>
-                <div
-                  className='flex flex-col gap-3 bg-slate-900 shadow-xl shadow-gray-950 rounded-lg p-4 w-fit mt-40'>
-                  <label
-                    className='text-white'
-                    htmlFor="tarea">Agregue una tarea nueva:</label>
-                  <textarea
-                    name=""
-                    id="tarea"
-                    rows="5"
-                    placeholder='Escriba aqui su tarea...'
-                    className='rounded-md p-1 w-[250px]'
-                    onChange={(e) => setTextTarea(e.target.value)}
-                    value={textTarea}
-                  ></textarea>
-                  <div className='flex justify-around'>
-                    <Button
-                      title="Agregar Tarea"
-                      className='bg-blue-600 text-white shadow-md'
-                      onClick={addNewTask}
-                    />
-                    <Button
-                      title="Ir atras"
-                      className='bg-red-600 text-white shadow-md'
-                      onClick={() => {
-                        setShowForm(false)
-                        setTextTarea('')
-                      }}
-                    />
-                  </div>
-                </div>
 
-              </div>
-            </>
-          )
-        }
+        {showForm && (
+          <FormTask
+            type="create"
+            handle={addNewTask}
+            showForm={setShowForm}
+            setTextTarea={setTextTarea}
+            textTarea={textTarea}
+          />
+        )}
       </div>
     </>
   )
