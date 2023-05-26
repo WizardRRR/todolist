@@ -55,8 +55,14 @@ function TodoList() {
   // funcion para agregar tarea
   const addNewTask = () => {
     if (textTarea.trim() !== "") {
+      let lastId = 0;
+      if (tareasList.length > 0) {
+        // Buscar el último valor de id en la lista
+        lastId = tareasList[tareasList.length - 1].id;
+      }
+
       const newTask = {
-        id: tareasList.length + 1,
+        id: lastId + 1,
         text: textTarea,
         completed: false,
       };
