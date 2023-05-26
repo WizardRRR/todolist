@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>
-      <div className='min-h-screen bg-slate-800 p-10'>
+      <div className='min-h-screen bg-slate-800 p-2 sm:p-10'>
         <TodoList />
       </div>
     </>
